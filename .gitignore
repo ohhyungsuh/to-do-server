@@ -1,0 +1,40 @@
+# IDEs/Editors
+HELP.md
+.idea/
+.vscode/
+*.swp
+*.iml
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+/target/
+/build/
+/*.log
+*.class
+*.war
+*.jar
+
+# Gradle
+.gradle
+**/build/
+!src/**/build/
+
+# Package Files
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Docker
+docker-compose.override.yml
+.env
+.env.local
+.env.*.local
+
+# MySQL dumps
+*.sql
+*.sqlite
