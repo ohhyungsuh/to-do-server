@@ -1,0 +1,27 @@
+package com.example.to_do_server.global.response;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+
+@Getter
+@RequiredArgsConstructor
+public enum ErrorCode {
+    // 인증, 인가
+    MEMBER_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "해당 작업을 수행할 권한이 없습니다."),
+    MEMBER_NOT_AUTHENTICATED(HttpStatus.UNAUTHORIZED, "로그인하지 않은 사용자입니다."),
+    INVALID_REQUEST(HttpStatus.BAD_REQUEST, "올바르지 않은 요청입니다."),
+
+    // 회원가입 에러
+    EXIST_USER_ID(HttpStatus.CONFLICT, "사용중인 아이디입니다."),
+    EXIST_USER_EMAIL(HttpStatus.CONFLICT, "사용중인 이메일입니다."),
+    EXIST_USER_NAME(HttpStatus.CONFLICT, "사용중인 이름입니다."),
+
+    // 로그인 에러
+    INCORRECT_LOGIN_ID(HttpStatus.UNAUTHORIZED, "아이디가 일치하지 않습니다."),
+    INCORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다.");
+
+
+    private final HttpStatus httpStatus;
+    private final String message;
+}
