@@ -1,1 +1,29 @@
-spring.application.name=to-do-server
+spring:
+  profiles:
+    active: local
+
+  application:
+    name: to-do-server
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://${H2_HOST}/~/${H2_DATABASE}
+    username: ${H2_USERNAME}
+    password: ${H2_PASSWORD}
+#    url: jdbc:h2:~/to-do
+#    url: jdbc:h2:tcp://${H2_HOST}/~/to-do
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create        # none, create, create-drop, update, validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        show_sql: true
