@@ -38,3 +38,5 @@ docker-compose.override.yml
 # MySQL dumps
 *.sql
 *.sqlite
+
+/src/main/resources/data/**
