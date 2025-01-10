@@ -3,6 +3,7 @@ package com.example.to_do_server.user.presentation;
 import com.example.to_do_server.global.response.BaseResponse;
 import com.example.to_do_server.session.SessionUtils;
 import com.example.to_do_server.user.domain.dto.LoginDto;
+import com.example.to_do_server.user.domain.dto.ProfileDto;
 import com.example.to_do_server.user.domain.dto.SignupDto;
 import com.example.to_do_server.user.domain.dto.UserDto;
 import com.example.to_do_server.user.service.UserService;
@@ -50,5 +51,13 @@ public class UserController {
         String userId = SessionUtils.getUserIdBySession(request);
         userService.remove(userId);
         return ResponseEntity.ok(BaseResponse.success("회원 탈퇴 성공"));
+    }
+
+    // 내 프로필 조회
+    @GetMapping("/me/profile")
+    public ResponseEntity<BaseResponse<ProfileDto>> getProfile(HttpServletRequest request) {
+        String userId = SessionUtils.getUserIdBySession(request);
+        ProfileDto profileDto = userService.getProfile(userId);
+        return ResponseEntity.ok(BaseResponse.success("내 프로필 조회",profileDto));
     }
 }

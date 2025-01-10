@@ -5,6 +5,7 @@ import com.example.to_do_server.global.response.ErrorCode;
 import com.example.to_do_server.session.SessionConst;
 import com.example.to_do_server.user.domain.User;
 import com.example.to_do_server.user.domain.dto.LoginDto;
+import com.example.to_do_server.user.domain.dto.ProfileDto;
 import com.example.to_do_server.user.domain.dto.SignupDto;
 import com.example.to_do_server.user.domain.dto.UserDto;
 import com.example.to_do_server.user.domain.repository.UserRepository;
@@ -87,6 +88,16 @@ public class UserService {
         userRepository.deleteByUserId(userId);
 
         log.info("회원 탈퇴");
+    }
+
+    public ProfileDto getProfile(String userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> GlobalException.from(ErrorCode.INVALID_SESSION));
+
+        ProfileDto profileDto = new ProfileDto(user);
+
+        log.info("내 프로필 조회");
+        return profileDto;
     }
 
     private void checkUserIdExists(SignupDto signupDto) {
