@@ -12,14 +12,7 @@ public class SessionUtils {
     public static String getUserIdBySession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
-        if (session == null) {
-            throw GlobalException.from(ErrorCode.NOT_EXIST_SESSION);
-        }
-
         Object userId = session.getAttribute(SessionConst.USER_ID.getKey());
-        if (userId == null) {
-            throw GlobalException.from(ErrorCode.INVALID_SESSION);
-        }
 
         return userId.toString();
     }
