@@ -153,5 +153,10 @@ class UserServiceTest {
         // 로그아웃 후 user 객체를 찾으면 에러가 발생해야 한다.
     }
 
+    @Test
+    @DisplayName("프로필 조회 테스트")
+    void 프로필_조회_테스트() {
+        // 로그인 후 프로필 조회를 하면 userId에 따라 profileDto가 반환된다
+    }
 
 }
