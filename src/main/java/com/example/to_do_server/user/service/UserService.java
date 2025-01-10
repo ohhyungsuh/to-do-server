@@ -10,6 +10,7 @@ import com.example.to_do_server.user.domain.dto.UserDto;
 import com.example.to_do_server.user.domain.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public UserDto signup(SignupDto signupDto) {
         checkUserIdExists(signupDto);
         checkNameExists(signupDto);
@@ -67,6 +69,24 @@ public class UserService {
         log.info("로그인 성공");
 
         return userDto;
+    }
+
+    public void logout(HttpServletRequest request) {
+        // 현재 세션 또는 null 반환
+        HttpSession session = request.getSession(false);
+
+        if(session == null) {
+            throw GlobalException.from(ErrorCode.NOT_EXIST_SESSION);
+        }
+
+        session.invalidate();
+    }
+
+    @Transactional
+    public void remove(String userId) {
+        userRepository.deleteByUserId(userId);
+
+        log.info("회원 탈퇴");
     }
 
     private void checkUserIdExists(SignupDto signupDto) {

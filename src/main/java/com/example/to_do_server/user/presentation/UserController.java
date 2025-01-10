@@ -1,6 +1,7 @@
 package com.example.to_do_server.user.presentation;
 
 import com.example.to_do_server.global.response.BaseResponse;
+import com.example.to_do_server.session.SessionUtils;
 import com.example.to_do_server.user.domain.dto.LoginDto;
 import com.example.to_do_server.user.domain.dto.SignupDto;
 import com.example.to_do_server.user.domain.dto.UserDto;
@@ -10,10 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -39,4 +37,18 @@ public class UserController {
         return ResponseEntity.ok(BaseResponse.success("환영합니다.", userDto));
     }
 
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<BaseResponse<?>> logout(HttpServletRequest request) {
+        userService.logout(request);
+        return ResponseEntity.ok(BaseResponse.success("로그아웃 하였습니다."));
+    }
+
+    // 회원 탈퇴
+    @DeleteMapping("/remove")
+    public ResponseEntity<BaseResponse<?>> remove(HttpServletRequest request) {
+        String userId = SessionUtils.getUserIdBySession(request);
+        userService.remove(userId);
+        return ResponseEntity.ok(BaseResponse.success("회원 탈퇴 성공"));
+    }
 }
