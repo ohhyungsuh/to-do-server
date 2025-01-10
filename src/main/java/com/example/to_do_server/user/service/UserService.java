@@ -1,16 +1,22 @@
 package com.example.to_do_server.user.service;
 
-import com.example.to_do_server.global.config.PasswordEncoderConfig;
 import com.example.to_do_server.global.exception.GlobalException;
 import com.example.to_do_server.global.response.ErrorCode;
+import com.example.to_do_server.session.SessionConst;
 import com.example.to_do_server.user.domain.User;
+import com.example.to_do_server.user.domain.dto.LoginDto;
 import com.example.to_do_server.user.domain.dto.SignupDto;
 import com.example.to_do_server.user.domain.dto.UserDto;
 import com.example.to_do_server.user.domain.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -38,6 +44,29 @@ public class UserService {
         log.info("User saved successfully: {}", user.getId());
 
         return new UserDto(user);
+    }
+
+    public UserDto login(LoginDto loginDto, HttpServletRequest request) {
+        Optional<User> findUser = userRepository.findByUserId(loginDto.getUserId());
+
+        User user = findUser.orElseThrow(() -> GlobalException.from(ErrorCode.INCORRECT_LOGIN_ID));
+
+        if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+            throw GlobalException.from(ErrorCode.INCORRECT_PASSWORD);
+        }
+
+        UserDto userDto = new UserDto(user);
+
+        // 기존 세션 있으면 반환하고 없으면 생성
+        HttpSession session = request.getSession();
+
+        // session key 값 설정하고 expiration 30분으로 설정
+        session.setAttribute(SessionConst.USER_ID.getKey(), user.getUserId());
+        session.setMaxInactiveInterval(SessionConst.USER_ID.getExpiration());
+
+        log.info("로그인 성공");
+
+        return userDto;
     }
 
     private void checkUserIdExists(SignupDto signupDto) {
