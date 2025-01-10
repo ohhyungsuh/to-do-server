@@ -40,3 +40,4 @@ docker-compose.override.yml
 *.sqlite
 
 /src/main/resources/data/**
+/src/test/java/com/example/to_do_server/user/service/UserServiceMockTest.java
