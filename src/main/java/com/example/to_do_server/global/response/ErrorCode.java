@@ -21,8 +21,10 @@ public enum ErrorCode {
 
     // 로그인 에러
     INCORRECT_LOGIN_ID(HttpStatus.UNAUTHORIZED, "아이디가 일치하지 않습니다."),
-    INCORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다.");
+    INCORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
 
+    // 그룹 에러
+    EXIST_GROUP_NAME(HttpStatus.CONFLICT, "사용중인 그룹 이름입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
