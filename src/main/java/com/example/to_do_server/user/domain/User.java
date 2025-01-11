@@ -1,11 +1,15 @@
 package com.example.to_do_server.user.domain;
 
 import com.example.to_do_server.global.entity.BaseTimeEntity;
+import com.example.to_do_server.group.domain.Group;
+import com.example.to_do_server.user_group.domain.UserGroup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,4 +37,7 @@ public class User extends BaseTimeEntity {
 
     @Column
     private LocalDate birth;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<UserGroup> userGroups = new ArrayList<>();
 }
