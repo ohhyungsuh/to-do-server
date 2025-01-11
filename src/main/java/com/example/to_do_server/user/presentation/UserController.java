@@ -46,7 +46,7 @@ public class UserController {
     }
 
     // 회원 탈퇴
-    @DeleteMapping("/remove")
+    @DeleteMapping
     public ResponseEntity<BaseResponse<?>> remove(HttpServletRequest request) {
         String userId = SessionUtils.getUserIdBySession(request);
         userService.remove(userId);
