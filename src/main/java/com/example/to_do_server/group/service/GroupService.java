@@ -57,5 +57,15 @@ public class GroupService {
 
 
     // 그룹 삭제
+    @Transactional
+    public void remove(String userId, Long groupId) {
+        UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId)
+                .orElseThrow(() -> GlobalException.from(ErrorCode.NOT_EXIST_GROUP));
 
+        if(!userGroup.getRole().equals(Role.OWNER)) {
+            throw GlobalException.from(ErrorCode.USER_NOT_AUTHORIZED);
+        }
+
+        groupRepository.deleteById(groupId);
+    }
 }

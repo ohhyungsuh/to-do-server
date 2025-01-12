@@ -20,10 +20,19 @@ public class GroupController {
 
     private final GroupService groupService;
 
+    // 그룹 생성
     @PostMapping
     public ResponseEntity<BaseResponse<GroupDto>> generate(@RequestBody @Valid GenerateGroupDto generateGroupDto, HttpServletRequest request) {
         String userId = SessionUtils.getUserIdBySession(request);
         GroupDto groupDto = groupService.generate(generateGroupDto, userId);
         return ResponseEntity.ok(BaseResponse.success("그룹이 생성됐습니다.", groupDto));
+    }
+
+    // 그룹 삭제
+    @DeleteMapping(path = "/{groupId}")
+    public ResponseEntity<BaseResponse<?>> remove(@PathVariable Long groupId, HttpServletRequest request) {
+        String userId = SessionUtils.getUserIdBySession(request);
+        groupService.remove(userId, groupId);
+        return ResponseEntity.ok(BaseResponse.success("그룹이 삭제되었습니다."));
     }
 }
