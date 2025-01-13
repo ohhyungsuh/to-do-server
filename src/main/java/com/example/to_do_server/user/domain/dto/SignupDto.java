@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class SignupDto {
 
     @NotNull(message = "아이디를 입력해주세요")
-    private String userId;
+    private String loginId;
 
     @Size(min = 8, message = "비밀번호는 8자 이상이어야 합니다.")
     @Pattern(regexp = ".*[!@#$].*", message = "비밀번호에는 특수문자(\"!,@,#,$\")가 포함되어야 합니다.")
@@ -30,8 +30,8 @@ public class SignupDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birth;
 
-    public SignupDto(String userId, String password, String name, String email, LocalDate birth) {
-        this.userId = userId;
+    public SignupDto(String loginId, String password, String name, String email, LocalDate birth) {
+        this.loginId = loginId;
         this.password = password;
         this.name = name;
         this.email = email;

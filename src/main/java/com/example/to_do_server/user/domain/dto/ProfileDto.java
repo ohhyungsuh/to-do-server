@@ -9,13 +9,13 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 public class ProfileDto {
-    private String userId;
+    private String loginId;
     private String name;
     private String email;
     private LocalDate birth;
 
     public ProfileDto(User user) {
-        this.userId = user.getUserId();
+        this.loginId = user.getLoginId();
         this.name = user.getName();
         this.email = user.getEmail();
         this.birth = user.getBirth();

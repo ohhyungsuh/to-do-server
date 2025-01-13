@@ -9,13 +9,13 @@ import lombok.NoArgsConstructor;
 public class LoginDto {
 
     @NotBlank
-    private String userId;
+    private String loginId;
 
     @NotBlank
     private String password;
 
-    public LoginDto(String userId, String password) {
-        this.userId = userId;
+    public LoginDto(String loginId, String password) {
+        this.loginId = loginId;
         this.password = password;
     }
 }

@@ -35,7 +35,7 @@ public class UserService {
         checkEmailExists(signupDto);
 
         User user = User.builder()
-                .userId(signupDto.getUserId())
+                .loginId(signupDto.getLoginId())
                 .password(passwordEncoder.encode(signupDto.getPassword()))
                 .name(signupDto.getName())
                 .email(signupDto.getEmail())
@@ -50,7 +50,7 @@ public class UserService {
     }
 
     public UserDto login(LoginDto loginDto, HttpServletRequest request) {
-        Optional<User> findUser = userRepository.findByUserId(loginDto.getUserId());
+        Optional<User> findUser = userRepository.findByLoginId(loginDto.getLoginId());
 
         User user = findUser.orElseThrow(() -> GlobalException.from(ErrorCode.INCORRECT_LOGIN_ID));
 
@@ -64,7 +64,7 @@ public class UserService {
         HttpSession session = request.getSession();
 
         // session key 값 설정하고 expiration 30분으로 설정
-        session.setAttribute(SessionConst.USER_ID.getKey(), user.getUserId());
+        session.setAttribute(SessionConst.USER_ID.getKey(), user.getId());
         session.setMaxInactiveInterval(SessionConst.USER_ID.getExpiration());
 
         log.info("로그인 성공");
@@ -84,14 +84,14 @@ public class UserService {
     }
 
     @Transactional
-    public void remove(String userId) {
-        userRepository.deleteByUserId(userId);
+    public void remove(Long userId) {
+        userRepository.deleteById(userId);
 
         log.info("회원 탈퇴");
     }
 
-    public ProfileDto getProfile(String userId) {
-        User user = userRepository.findByUserId(userId)
+    public ProfileDto getProfile(Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> GlobalException.from(ErrorCode.INVALID_SESSION));
 
         ProfileDto profileDto = new ProfileDto(user);
@@ -101,7 +101,7 @@ public class UserService {
     }
 
     private void checkUserIdExists(SignupDto signupDto) {
-        if (userRepository.existsByUserId(signupDto.getUserId())) {
+        if (userRepository.existsByLoginId(signupDto.getLoginId())) {
             throw GlobalException.from(ErrorCode.EXIST_USER_ID);
         }
     }
