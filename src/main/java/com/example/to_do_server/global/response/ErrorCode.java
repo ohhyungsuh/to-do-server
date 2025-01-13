@@ -24,7 +24,6 @@ public enum ErrorCode {
     INCORRECT_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
 
     // 그룹 에러
-    EXIST_GROUP_NAME(HttpStatus.CONFLICT, "사용중인 그룹 이름입니다."),
     NOT_EXIST_GROUP(HttpStatus.NOT_FOUND, "해당 그룹을 찾을 수 없습니다.");
 
     private final HttpStatus httpStatus;

@@ -89,7 +89,6 @@ public class GroupService {
 
         GroupAdminsDto adminsDto = getAdmins(userGroups);
         Status myStatus = getMyStatus(userGroups, userId);
-
         return new GroupDetailDto(group, adminsDto, myStatus);
     }
 
@@ -97,7 +96,7 @@ public class GroupService {
     @Transactional
     public void remove(Long userId, Long groupId) {
         UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId)
-                .orElseThrow(() -> GlobalException.from(ErrorCode.NOT_EXIST_GROUP));
+                .orElseThrow(() -> GlobalException.from(ErrorCode.INVALID_REQUEST));
 
         if (!userGroup.getRole().equals(Role.OWNER)) {
             throw GlobalException.from(ErrorCode.USER_NOT_AUTHORIZED);
