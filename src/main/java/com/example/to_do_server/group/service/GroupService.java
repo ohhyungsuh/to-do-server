@@ -5,6 +5,7 @@ import com.example.to_do_server.global.response.ErrorCode;
 import com.example.to_do_server.group.domain.Group;
 import com.example.to_do_server.group.domain.dto.GenerateGroupDto;
 import com.example.to_do_server.group.domain.dto.GroupDto;
+import com.example.to_do_server.group.domain.dto.GroupInfoDto;
 import com.example.to_do_server.group.domain.repository.GroupRepository;
 import com.example.to_do_server.user.domain.User;
 import com.example.to_do_server.user.domain.repository.UserRepository;
@@ -15,6 +16,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -53,12 +58,29 @@ public class GroupService {
         return new GroupDto(group);
     }
 
-    // 그룹 조회
+    // 내 그룹 조회(참여중인 것)
+    /* todo 승인 대기 목록은 UserGroupService에서 */
+    public List<GroupInfoDto> getMyGroupInfos(Long userId) {
+        List<UserGroup> userGroups = userGroupRepository.findByUserId(userId);
 
+        return userGroups.stream()
+                .filter(UserGroup::getStatus)
+                .map(userGroup -> groupRepository.findById(userGroup.getGroup().getId()).orElse(null))
+                .filter(Objects::nonNull)
+                .map(GroupInfoDto::new)
+                .toList();
+    }
+
+    // 그룹 목록 전체 조회
+    public List<GroupInfoDto> getGroupInfos() {
+        return groupRepository.findAll().stream()
+                .map(GroupInfoDto::new)
+                .toList();
+    }
 
     // 그룹 삭제
     @Transactional
-    public void remove(String userId, Long groupId) {
+    public void remove(Long userId, Long groupId) {
         UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId)
                 .orElseThrow(() -> GlobalException.from(ErrorCode.NOT_EXIST_GROUP));
 
