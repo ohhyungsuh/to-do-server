@@ -33,6 +33,9 @@ public class UserGroup extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role = Role.MEMBER;
 
-    private Boolean status;
+    @Column
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.NOT_JOIN;
 
 }

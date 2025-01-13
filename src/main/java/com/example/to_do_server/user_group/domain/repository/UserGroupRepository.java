@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
     Optional<UserGroup> findByUserIdAndGroupId(Long userId, Long groupId);
     List<UserGroup> findByUserId(Long userId);
+    List<UserGroup> findByGroupId(Long groupId);
 
 //    String loginId를 사용하고 싶을 때 즉시 로딩으로 연관된 엔티티를 한 번에 가져온다
 //    @Query("SELECT ug FROM UserGroup ug JOIN FETCH ug.user u WHERE u.userId = :userId")
