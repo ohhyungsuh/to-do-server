@@ -2,6 +2,7 @@ package com.example.to_do_server.group.presentation;
 
 import com.example.to_do_server.global.response.BaseResponse;
 import com.example.to_do_server.group.domain.dto.GenerateGroupDto;
+import com.example.to_do_server.group.domain.dto.GroupDetailDto;
 import com.example.to_do_server.group.domain.dto.GroupDto;
 import com.example.to_do_server.group.domain.dto.GroupInfoDto;
 import com.example.to_do_server.group.service.GroupService;
@@ -45,6 +46,14 @@ public class GroupController {
         Long userId = SessionUtils.getUserIdBySession(request);
         List<GroupInfoDto> groupInfos = groupService.getMyGroupInfos(userId);
         return ResponseEntity.ok(BaseResponse.success("내 그룹을 조회했습니다.", groupInfos));
+    }
+
+    // 그룹 한 개 조회
+    @GetMapping(path = "/{groupId}")
+    public ResponseEntity<BaseResponse<GroupDetailDto>> getGroupDetail(@PathVariable Long groupId, HttpServletRequest request) {
+        Long userId = SessionUtils.getUserIdBySession(request);
+        GroupDetailDto groupDetailDto = groupService.getGroupDetail(userId, groupId);
+        return ResponseEntity.ok(BaseResponse.success("그룹 한개를 조회했습니다.", groupDetailDto));
     }
 
     // 전체 그룹 조회
