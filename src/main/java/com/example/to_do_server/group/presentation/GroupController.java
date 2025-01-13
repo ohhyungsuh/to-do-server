@@ -23,7 +23,7 @@ public class GroupController {
     // 그룹 생성
     @PostMapping
     public ResponseEntity<BaseResponse<GroupDto>> generate(@RequestBody @Valid GenerateGroupDto generateGroupDto, HttpServletRequest request) {
-        String userId = SessionUtils.getUserIdBySession(request);
+        Long userId = SessionUtils.getUserIdBySession(request);
         GroupDto groupDto = groupService.generate(generateGroupDto, userId);
         return ResponseEntity.ok(BaseResponse.success("그룹이 생성됐습니다.", groupDto));
     }

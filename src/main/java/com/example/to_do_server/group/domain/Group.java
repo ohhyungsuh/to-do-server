@@ -25,6 +25,7 @@ public class Group extends BaseTimeEntity {
 
     private String description;
 
+    @Builder.Default
     @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
     private List<UserGroup> userGroups = new ArrayList<>();
 

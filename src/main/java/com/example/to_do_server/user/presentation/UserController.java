@@ -48,7 +48,7 @@ public class UserController {
     // 회원 탈퇴
     @DeleteMapping
     public ResponseEntity<BaseResponse<?>> remove(HttpServletRequest request) {
-        String userId = SessionUtils.getUserIdBySession(request);
+        Long userId = SessionUtils.getUserIdBySession(request);
         userService.remove(userId);
         return ResponseEntity.ok(BaseResponse.success("회원 탈퇴 성공"));
     }
@@ -56,7 +56,7 @@ public class UserController {
     // 내 프로필 조회
     @GetMapping("/me/profile")
     public ResponseEntity<BaseResponse<ProfileDto>> getProfile(HttpServletRequest request) {
-        String userId = SessionUtils.getUserIdBySession(request);
+        Long userId = SessionUtils.getUserIdBySession(request);
         ProfileDto profileDto = userService.getProfile(userId);
         return ResponseEntity.ok(BaseResponse.success("내 프로필 조회",profileDto));
     }

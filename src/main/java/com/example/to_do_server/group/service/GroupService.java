@@ -28,7 +28,7 @@ public class GroupService {
     /* todo 그룹 생성 개수 제한, 그룹 내 사람 명수 업데이트 */
     // 그룹 생성
     @Transactional
-    public GroupDto generate(GenerateGroupDto generateGroupDto, String userId) {
+    public GroupDto generate(GenerateGroupDto generateGroupDto, Long userId) {
         Group group = Group.builder()
                 .name(generateGroupDto.getName())
                 .description(generateGroupDto.getDescription())
@@ -36,8 +36,8 @@ public class GroupService {
 
         groupRepository.save(group);
 
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> GlobalException.from(ErrorCode.INCORRECT_LOGIN_ID));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> GlobalException.from(ErrorCode.INVALID_SESSION));
 
         // 그룹 생성과 동시에 그룹의 OWNER가 되고, 가입은 완료된 상태
         UserGroup userGroup = UserGroup.builder()

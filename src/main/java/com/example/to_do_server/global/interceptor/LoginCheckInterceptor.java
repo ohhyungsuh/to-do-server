@@ -35,7 +35,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         }
 
         /* todo: redirect 필요 */
-
+        log.info("세션 정보 확인 성공");
         return true;
     }
 

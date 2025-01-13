@@ -24,7 +24,7 @@ public class User extends BaseTimeEntity {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String userId;
+    private String loginId;
 
     @Column(nullable = false)
     private String password;
@@ -38,6 +38,7 @@ public class User extends BaseTimeEntity {
     @Column
     private LocalDate birth;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<UserGroup> userGroups = new ArrayList<>();
 }
