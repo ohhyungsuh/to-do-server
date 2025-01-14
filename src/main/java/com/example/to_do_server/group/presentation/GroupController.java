@@ -7,6 +7,7 @@ import com.example.to_do_server.group.domain.dto.GroupDto;
 import com.example.to_do_server.group.domain.dto.GroupInfoDto;
 import com.example.to_do_server.group.service.GroupService;
 import com.example.to_do_server.session.SessionUtils;
+import com.example.to_do_server.user_group.domain.Status;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,13 +41,30 @@ public class GroupController {
         return ResponseEntity.ok(BaseResponse.success("그룹이 삭제되었습니다."));
     }
 
-    // 내 그룹 조회
+    // 내 그룹 전체 조회
     @GetMapping(path = "/me")
     public ResponseEntity<BaseResponse<List<GroupInfoDto>>> getMyGroupInfos(HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         List<GroupInfoDto> groupInfos = groupService.getMyGroupInfos(userId);
-        return ResponseEntity.ok(BaseResponse.success("내 그룹을 조회했습니다.", groupInfos));
+        return ResponseEntity.ok(BaseResponse.success("내 그룹을 전체 조회했습니다.", groupInfos));
     }
+
+    // 참여중인 내 그룹 조회
+    @GetMapping(path = "/me/joined")
+    public ResponseEntity<BaseResponse<List<GroupInfoDto>>> getJoinedGroups(HttpServletRequest request) {
+        Long userId = SessionUtils.getUserIdBySession(request);
+        List<GroupInfoDto> joinedGroupInfos = groupService.getMyGroupInfosByStatus(userId, Status.JOIN);
+        return ResponseEntity.ok(BaseResponse.success("참여중인 내 그룹을 조회했습니다.", joinedGroupInfos));
+    }
+
+    // 대기중인 내 그룹 조회
+    @GetMapping(path = "/me/pending")
+    public ResponseEntity<BaseResponse<List<GroupInfoDto>>> getPendingGroups(HttpServletRequest request) {
+        Long userId = SessionUtils.getUserIdBySession(request);
+        List<GroupInfoDto> joinedGroupInfos = groupService.getMyGroupInfosByStatus(userId, Status.PENDING);
+        return ResponseEntity.ok(BaseResponse.success("대기중인 내 그룹을 조회했습니다.", joinedGroupInfos));
+    }
+
 
     // 그룹 한 개 조회
     @GetMapping(path = "/{groupId}")
