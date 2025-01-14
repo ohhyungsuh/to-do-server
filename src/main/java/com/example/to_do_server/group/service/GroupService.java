@@ -56,13 +56,24 @@ public class GroupService {
         return new GroupDto(group);
     }
 
-    // 내 그룹 조회(참여중인 것)
-    /* todo 승인 대기 목록은 UserGroupService에서 */
+    // 나와 관련된 모든 그룹 조회
     public List<GroupInfoDto> getMyGroupInfos(Long userId) {
         List<UserGroup> userGroups = userGroupRepository.findByUserId(userId);
 
         return userGroups.stream()
                 .filter(userGroup -> userGroup.getStatus().equals(Status.JOIN))
+                .map(userGroup -> groupRepository.findById(userGroup.getGroup().getId()).orElse(null))
+                .filter(Objects::nonNull)
+                .map(GroupInfoDto::new)
+                .toList();
+    }
+
+    // joined 또는 pending 그룹 조회
+    public List<GroupInfoDto> getMyGroupInfosByStatus(Long userId, Status status) {
+        List<UserGroup> userGroups = userGroupRepository.findByUserId(userId);
+
+        return userGroups.stream()
+                .filter(userGroup -> userGroup.getStatus().equals(status))
                 .map(userGroup -> groupRepository.findById(userGroup.getGroup().getId()).orElse(null))
                 .filter(Objects::nonNull)
                 .map(GroupInfoDto::new)
