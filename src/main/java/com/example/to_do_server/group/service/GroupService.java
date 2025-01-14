@@ -16,10 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -87,9 +85,15 @@ public class GroupService {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> GlobalException.from(ErrorCode.NOT_EXIST_GROUP));
 
-        GroupAdminsDto adminsDto = getAdmins(userGroups);
+        GroupInfoDto infoDto = new GroupInfoDto(group);
+        GroupOwnerDto ownerDto = getGroupOwner(userGroups);
         Status myStatus = getMyStatus(userGroups, userId);
-        return new GroupDetailDto(group, adminsDto, myStatus);
+
+        return GroupDetailDto.builder()
+                .groupInfoDto(infoDto)
+                .groupOwnerDto(ownerDto)
+                .myStatus(myStatus)
+                .build();
     }
 
     // 그룹 삭제
@@ -105,20 +109,17 @@ public class GroupService {
         groupRepository.deleteById(groupId);
     }
 
-    private GroupAdminsDto getAdmins(List<UserGroup> userGroups) {
-        Long ownerId = null;
-        List<Long> managerIds = new ArrayList<>();
+    private GroupOwnerDto getGroupOwner(List<UserGroup> userGroups) {
+        // OWNER가 없다는 뜻은 그룹이 삭제됐다는 뜻이다.
+        User user = userGroups.stream()
+                .filter(userGroup -> userGroup.getRole().equals(Role.OWNER))
+                .map(UserGroup::getUser)
+                .findFirst()
+                .orElseThrow(() -> GlobalException.from(ErrorCode.NOT_EXIST_GROUP));
 
-        for (UserGroup userGroup : userGroups) {
-            if (userGroup.getRole().equals(Role.OWNER)) {
-                ownerId = userGroup.getUser().getId();
-            } else if (userGroup.getRole().equals(Role.MANAGER)) {
-                managerIds.add(userGroup.getUser().getId());
-            }
-        }
-
-        return new GroupAdminsDto(ownerId, managerIds);
+        return new GroupOwnerDto(user);
     }
+
 
     private Status getMyStatus(List<UserGroup> userGroups, Long userId) {
         return userGroups.stream()
