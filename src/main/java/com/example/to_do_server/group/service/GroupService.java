@@ -1,7 +1,7 @@
 package com.example.to_do_server.group.service;
 
 import com.example.to_do_server.global.exception.GlobalException;
-import com.example.to_do_server.global.response.ErrorCode;
+import com.example.to_do_server.global.response.ResponseCode;
 import com.example.to_do_server.group.domain.Group;
 import com.example.to_do_server.group.domain.dto.*;
 import com.example.to_do_server.group.domain.repository.GroupRepository;
@@ -40,7 +40,7 @@ public class GroupService {
         groupRepository.save(group);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> GlobalException.from(ErrorCode.INVALID_SESSION));
+                .orElseThrow(() -> GlobalException.from(ResponseCode.INVALID_SESSION));
 
         // 그룹 생성과 동시에 그룹의 OWNER가 되고, 가입은 완료된 상태
         UserGroup userGroup = UserGroup.builder()
@@ -94,16 +94,16 @@ public class GroupService {
         List<UserGroup> userGroups = userGroupRepository.findByGroupId(groupId);
 
         Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> GlobalException.from(ErrorCode.NOT_EXIST_GROUP));
+                .orElseThrow(() -> GlobalException.from(ResponseCode.NOT_EXIST_GROUP));
 
         GroupInfoDto infoDto = new GroupInfoDto(group);
         GroupOwnerDto ownerDto = getGroupOwner(userGroups);
-        Status myStatus = getMyStatus(userGroups, userId);
+        Status status = getStatus(userGroups, userId);
 
         return GroupDetailDto.builder()
                 .groupInfoDto(infoDto)
                 .groupOwnerDto(ownerDto)
-                .myStatus(myStatus)
+                .status(status)
                 .build();
     }
 
@@ -111,10 +111,10 @@ public class GroupService {
     @Transactional
     public void remove(Long userId, Long groupId) {
         UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId)
-                .orElseThrow(() -> GlobalException.from(ErrorCode.INVALID_REQUEST));
+                .orElseThrow(() -> GlobalException.from(ResponseCode.INVALID_REQUEST));
 
         if (!userGroup.getRole().equals(Role.OWNER)) {
-            throw GlobalException.from(ErrorCode.USER_NOT_AUTHORIZED);
+            throw GlobalException.from(ResponseCode.USER_NOT_AUTHORIZED);
         }
 
         groupRepository.deleteById(groupId);
@@ -126,13 +126,13 @@ public class GroupService {
                 .filter(userGroup -> userGroup.getRole().equals(Role.OWNER))
                 .map(UserGroup::getUser)
                 .findFirst()
-                .orElseThrow(() -> GlobalException.from(ErrorCode.NOT_EXIST_GROUP));
+                .orElseThrow(() -> GlobalException.from(ResponseCode.NOT_EXIST_GROUP));
 
         return new GroupOwnerDto(user);
     }
 
 
-    private Status getMyStatus(List<UserGroup> userGroups, Long userId) {
+    private Status getStatus(List<UserGroup> userGroups, Long userId) {
         return userGroups.stream()
                 .filter(userGroup -> userGroup.getUser().getId().equals(userId))
                 .map(UserGroup::getStatus)

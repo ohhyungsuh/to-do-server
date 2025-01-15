@@ -1,7 +1,7 @@
 package com.example.to_do_server.global.exception;
 
 import com.example.to_do_server.global.response.BaseResponse;
-import com.example.to_do_server.global.response.ErrorCode;
+import com.example.to_do_server.global.response.ResponseCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -15,11 +15,9 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(GlobalException.class)
-    public ResponseEntity<BaseResponse<Object>> handleGlobalException(GlobalException exception) {
+    public BaseResponse<Object> handleGlobalException(GlobalException exception) {
         logger.error("GlobalException occurred: {}", exception.getMessage(), exception);
-        ErrorCode errorCode = exception.getErrorCode();
-        return ResponseEntity
-                .status(errorCode.getHttpStatus())
-                .body(BaseResponse.error(errorCode));
+
+        return new BaseResponse<>(exception);
     }
 }

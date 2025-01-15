@@ -1,49 +1,58 @@
 package com.example.to_do_server.global.response;
 
+import com.example.to_do_server.global.exception.GlobalException;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
-@AllArgsConstructor
-@Builder
 public class BaseResponse<T> {
+    private final Status status;
 
-    private final int code;
-    private final String message;
-    private final T result;
-    private final Object meta;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Metadata metadata; // 결과 개수
 
-    private static final int SUCCESS_CODE = 200;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private List<T> results;
 
-    public static <T> BaseResponse<T> success(String message) {
-        return BaseResponse.<T>builder()
-                .code(SUCCESS_CODE)
-                .message(message)
-                .build();
+    // 단일 결과 반환
+    public BaseResponse(T data) {
+        this.status = new Status(ResponseCode.REQUEST_OK);
+        this.metadata = new Metadata(1);
+        this.results = List.of(data);
     }
 
-    public static <T> BaseResponse<T> success(String message, T result) {
-        return BaseResponse.<T>builder()
-                .code(SUCCESS_CODE)
-                .message(message)
-                .result(result)
-                .build();
+    // 여러 개의 결과 반환
+    public BaseResponse(List<T> results) {
+        this.status = new Status(ResponseCode.REQUEST_OK);
+        this.metadata = new Metadata(results.size());
+        this.results = results;
     }
 
-    public static <T> BaseResponse<T> success(String message, T result, Object meta) {
-        return BaseResponse.<T>builder()
-                .code(SUCCESS_CODE)
-                .message(message)
-                .result(result)
-                .meta(meta)
-                .build();
+    public BaseResponse(ResponseCode responseCode) {
+        this.status = new Status(responseCode);
     }
 
-    public static <T> BaseResponse<T> error(ErrorCode errorCode) {
-        return BaseResponse.<T>builder()
-                .code(errorCode.getHttpStatus().value())
-                .message(errorCode.getMessage())
-                .build();
+    public BaseResponse(GlobalException exception) {
+        this.status = new Status(exception.getResponseCode());
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class Metadata {
+        private int resultCount = 0;
+    }
+
+    @Getter
+    private static class Status {
+        private final int code;
+        private final String message;
+
+        public Status(ResponseCode responseCode) {
+            this.code = responseCode.getHttpStatus().value();
+            this.message = responseCode.getMessage();
+        }
     }
 }

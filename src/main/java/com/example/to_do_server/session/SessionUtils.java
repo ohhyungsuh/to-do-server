@@ -1,12 +1,8 @@
 package com.example.to_do_server.session;
 
-import com.example.to_do_server.global.exception.GlobalException;
-import com.example.to_do_server.global.response.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.NoArgsConstructor;
-
-import java.util.Optional;
 
 @NoArgsConstructor
 public class SessionUtils {

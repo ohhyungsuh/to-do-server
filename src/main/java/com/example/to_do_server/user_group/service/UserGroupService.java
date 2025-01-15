@@ -1,7 +1,7 @@
 package com.example.to_do_server.user_group.service;
 
 import com.example.to_do_server.global.exception.GlobalException;
-import com.example.to_do_server.global.response.ErrorCode;
+import com.example.to_do_server.global.response.ResponseCode;
 import com.example.to_do_server.group.domain.Group;
 import com.example.to_do_server.group.domain.repository.GroupRepository;
 import com.example.to_do_server.user.domain.User;
@@ -32,14 +32,14 @@ public class UserGroupService {
         Optional<UserGroup> findUserGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId);
 
         if (findUserGroup.isPresent()) {
-            throw GlobalException.from(ErrorCode.EXIST_USER_GROUP);
+            throw GlobalException.from(ResponseCode.EXIST_USER_GROUP);
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> GlobalException.from(ErrorCode.INVALID_SESSION));
+                .orElseThrow(() -> GlobalException.from(ResponseCode.INVALID_SESSION));
 
         Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> GlobalException.from(ErrorCode.NOT_EXIST_GROUP));
+                .orElseThrow(() -> GlobalException.from(ResponseCode.NOT_EXIST_GROUP));
 
         UserGroup userGroup = UserGroup.builder()
                 .user(user)
@@ -88,6 +88,6 @@ public class UserGroupService {
 
     private UserGroup getUserGroupByUserIdAndGroupId(Long userId, Long groupId) {
         return userGroupRepository.findByUserIdAndGroupId(userId, groupId)
-                .orElseThrow(() -> GlobalException.from(ErrorCode.INVALID_REQUEST));
+                .orElseThrow(() -> GlobalException.from(ResponseCode.INVALID_REQUEST));
     }
 }

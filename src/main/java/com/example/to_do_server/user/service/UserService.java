@@ -1,7 +1,7 @@
 package com.example.to_do_server.user.service;
 
 import com.example.to_do_server.global.exception.GlobalException;
-import com.example.to_do_server.global.response.ErrorCode;
+import com.example.to_do_server.global.response.ResponseCode;
 import com.example.to_do_server.session.SessionConst;
 import com.example.to_do_server.user.domain.User;
 import com.example.to_do_server.user.domain.dto.LoginDto;
@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -52,10 +51,10 @@ public class UserService {
     public UserDto login(LoginDto loginDto, HttpServletRequest request) {
         Optional<User> findUser = userRepository.findByLoginId(loginDto.getLoginId());
 
-        User user = findUser.orElseThrow(() -> GlobalException.from(ErrorCode.INCORRECT_LOGIN_ID));
+        User user = findUser.orElseThrow(() -> GlobalException.from(ResponseCode.INCORRECT_LOGIN_ID));
 
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw GlobalException.from(ErrorCode.INCORRECT_PASSWORD);
+            throw GlobalException.from(ResponseCode.INCORRECT_PASSWORD);
         }
 
         UserDto userDto = new UserDto(user);
@@ -77,7 +76,7 @@ public class UserService {
         HttpSession session = request.getSession(false);
 
         if(session == null) {
-            throw GlobalException.from(ErrorCode.NOT_EXIST_SESSION);
+            throw GlobalException.from(ResponseCode.NOT_EXIST_SESSION);
         }
 
         session.invalidate();
@@ -92,7 +91,7 @@ public class UserService {
 
     public ProfileDto getProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> GlobalException.from(ErrorCode.INVALID_SESSION));
+                .orElseThrow(() -> GlobalException.from(ResponseCode.INVALID_SESSION));
 
         ProfileDto profileDto = new ProfileDto(user);
 
@@ -102,20 +101,20 @@ public class UserService {
 
     private void checkUserIdExists(SignupDto signupDto) {
         if (userRepository.existsByLoginId(signupDto.getLoginId())) {
-            throw GlobalException.from(ErrorCode.EXIST_USER_ID);
+            throw GlobalException.from(ResponseCode.EXIST_USER_ID);
         }
     }
 
     private void checkNameExists(SignupDto signupDto) {
         if (userRepository.existsByName(signupDto.getName())) {
-            throw GlobalException.from(ErrorCode.EXIST_USER_NAME);
+            throw GlobalException.from(ResponseCode.EXIST_USER_NAME);
         }
     }
 
     private void checkEmailExists(SignupDto signupDto) {
         if (userRepository.existsByEmail(signupDto.getEmail())) {
             log.info("중복된 사용자 이메일");
-            throw GlobalException.from(ErrorCode.EXIST_USER_EMAIL);
+            throw GlobalException.from(ResponseCode.EXIST_USER_EMAIL);
         }
     }
 
