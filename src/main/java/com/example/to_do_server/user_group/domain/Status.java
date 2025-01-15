@@ -6,5 +6,6 @@ import lombok.Getter;
 public enum Status {
     JOIN,
     PENDING,
-    NOT_JOIN;
+    NOT_JOIN,
+    DENY;
 }

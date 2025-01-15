@@ -28,6 +28,7 @@ public enum ResponseCode {
 
     // 그룹 에러
     NOT_EXIST_GROUP(HttpStatus.NOT_FOUND, "해당 그룹을 찾을 수 없습니다."),
+    DENY_GROUP(HttpStatus.FORBIDDEN, "추방당한 방은 들어갈 수 없습니다."),
 
     // 유저-그룹 에러
     EXIST_USER_GROUP(HttpStatus.CONFLICT, "이미 참가 요청을 보냈거나, 참여중인 그룹입니다.");

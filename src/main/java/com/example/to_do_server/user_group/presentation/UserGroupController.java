@@ -63,4 +63,9 @@ public class UserGroupController {
     // todo 그룹 가입 요청 조회
 
     // todo 그룹 내 인원 추방
+
+    // todo 그룹 내 인원 매니저 승진
+
+    // todo 그룹 내 인원 일반 강등
+
 }
