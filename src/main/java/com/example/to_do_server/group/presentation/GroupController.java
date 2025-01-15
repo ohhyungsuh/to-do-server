@@ -1,6 +1,7 @@
 package com.example.to_do_server.group.presentation;
 
 import com.example.to_do_server.global.response.BaseResponse;
+import com.example.to_do_server.global.response.ResponseCode;
 import com.example.to_do_server.group.domain.dto.GenerateGroupDto;
 import com.example.to_do_server.group.domain.dto.GroupDetailDto;
 import com.example.to_do_server.group.domain.dto.GroupDto;
@@ -27,58 +28,58 @@ public class GroupController {
 
     // 그룹 생성
     @PostMapping
-    public ResponseEntity<BaseResponse<GroupDto>> generate(@RequestBody @Valid GenerateGroupDto generateGroupDto, HttpServletRequest request) {
+    public BaseResponse<GroupDto> generate(@RequestBody @Valid GenerateGroupDto generateGroupDto, HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         GroupDto groupDto = groupService.generate(generateGroupDto, userId);
-        return ResponseEntity.ok(BaseResponse.success("그룹이 생성됐습니다.", groupDto));
+        return new BaseResponse<>(groupDto);
     }
 
     // 그룹 삭제
     @DeleteMapping(path = "/{groupId}")
-    public ResponseEntity<BaseResponse<?>> remove(@PathVariable Long groupId, HttpServletRequest request) {
+    public BaseResponse<?> remove(@PathVariable Long groupId, HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         groupService.remove(userId, groupId);
-        return ResponseEntity.ok(BaseResponse.success("그룹이 삭제되었습니다."));
+        return new BaseResponse<>(ResponseCode.REQUEST_OK);
     }
 
     // 내 그룹 전체 조회
     @GetMapping(path = "/me")
-    public ResponseEntity<BaseResponse<List<GroupInfoDto>>> getMyGroupInfos(HttpServletRequest request) {
+    public BaseResponse<GroupInfoDto> getMyGroupInfos(HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         List<GroupInfoDto> groupInfos = groupService.getMyGroupInfos(userId);
-        return ResponseEntity.ok(BaseResponse.success("내 그룹을 전체 조회했습니다.", groupInfos));
+        return new BaseResponse<>(groupInfos);
     }
 
     // 참여중인 내 그룹 조회
     @GetMapping(path = "/me/joined")
-    public ResponseEntity<BaseResponse<List<GroupInfoDto>>> getJoinedGroups(HttpServletRequest request) {
+    public BaseResponse<GroupInfoDto> getJoinedGroups(HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         List<GroupInfoDto> joinedGroupInfos = groupService.getMyGroupInfosByStatus(userId, Status.JOIN);
-        return ResponseEntity.ok(BaseResponse.success("참여중인 내 그룹을 조회했습니다.", joinedGroupInfos));
+        return new BaseResponse<>(joinedGroupInfos);
     }
 
     // 대기중인 내 그룹 조회
     @GetMapping(path = "/me/pending")
-    public ResponseEntity<BaseResponse<List<GroupInfoDto>>> getPendingGroups(HttpServletRequest request) {
+    public BaseResponse<GroupInfoDto> getPendingGroups(HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
-        List<GroupInfoDto> joinedGroupInfos = groupService.getMyGroupInfosByStatus(userId, Status.PENDING);
-        return ResponseEntity.ok(BaseResponse.success("대기중인 내 그룹을 조회했습니다.", joinedGroupInfos));
+        List<GroupInfoDto> pendingGroupInfos = groupService.getMyGroupInfosByStatus(userId, Status.PENDING);
+        return new BaseResponse<>(pendingGroupInfos);
     }
 
 
     // 그룹 한 개 조회
     @GetMapping(path = "/{groupId}")
-    public ResponseEntity<BaseResponse<GroupDetailDto>> getGroupDetail(@PathVariable Long groupId, HttpServletRequest request) {
+    public BaseResponse<GroupDetailDto> getGroupDetail(@PathVariable Long groupId, HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         GroupDetailDto groupDetailDto = groupService.getGroupDetail(userId, groupId);
-        return ResponseEntity.ok(BaseResponse.success("그룹 한개를 조회했습니다.", groupDetailDto));
+        return new BaseResponse<>(groupDetailDto);
     }
 
     // 전체 그룹 조회
     @GetMapping
-    public ResponseEntity<BaseResponse<List<GroupInfoDto>>> getGroupInfos(HttpServletRequest request) {
+    public BaseResponse<GroupInfoDto> getGroupInfos(HttpServletRequest request) {
         SessionUtils.getUserIdBySession(request);
         List<GroupInfoDto> groupInfos = groupService.getGroupInfos();
-        return ResponseEntity.ok(BaseResponse.success("그룹을 조회했습니다.", groupInfos));
+        return new BaseResponse<>(groupInfos);
     }
 }

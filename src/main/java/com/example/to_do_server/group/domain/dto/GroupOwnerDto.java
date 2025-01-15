@@ -7,11 +7,11 @@ import java.util.List;
 
 @Getter
 public class GroupOwnerDto {
-    private final Long ownerId;
-    private final String ownerName;
+    private final Long id;
+    private final String name;
 
     public GroupOwnerDto(User user) {
-        this.ownerId = user.getId();
-        this.ownerName = user.getName();
+        this.id = user.getId();
+        this.name = user.getName();
     }
 }

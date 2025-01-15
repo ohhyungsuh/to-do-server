@@ -1,7 +1,7 @@
 package com.example.to_do_server.global.interceptor;
 
 import com.example.to_do_server.global.exception.GlobalException;
-import com.example.to_do_server.global.response.ErrorCode;
+import com.example.to_do_server.global.response.ResponseCode;
 import com.example.to_do_server.session.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,13 +25,13 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         if (session == null) {
             log.info("세션이 없습니다.");
-            throw GlobalException.from(ErrorCode.NOT_EXIST_SESSION);
+            throw GlobalException.from(ResponseCode.NOT_EXIST_SESSION);
         }
 
         Object userId = session.getAttribute(SessionConst.USER_ID.getKey());
         if (userId == null) {
             log.info("로그인 정보가 없습니다.");
-            throw GlobalException.from(ErrorCode.INVALID_SESSION);
+            throw GlobalException.from(ResponseCode.INVALID_SESSION);
         }
 
         /* todo: redirect 필요 */

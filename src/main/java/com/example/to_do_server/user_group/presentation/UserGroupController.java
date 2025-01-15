@@ -1,6 +1,7 @@
 package com.example.to_do_server.user_group.presentation;
 
 import com.example.to_do_server.global.response.BaseResponse;
+import com.example.to_do_server.global.response.ResponseCode;
 import com.example.to_do_server.session.SessionUtils;
 import com.example.to_do_server.user_group.domain.dto.UserInfoDto;
 import com.example.to_do_server.user_group.service.UserGroupService;
@@ -23,34 +24,34 @@ public class UserGroupController {
     // todo 알림 테이블 만들어서 실시간 알람 기능 만들어보기
     // 그룹 가입 요청
     @PostMapping(value = "/{groupId}")
-    public ResponseEntity<BaseResponse<?>> sendJoin(@PathVariable Long groupId, HttpServletRequest request) {
+    public BaseResponse<?> sendJoin(@PathVariable Long groupId, HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         userGroupService.sendJoin(userId, groupId);
-        return ResponseEntity.ok(BaseResponse.success("그룹 가입 요청을 보냈습니다. 승인까지 기다려주세요."));
+        return new BaseResponse<>(ResponseCode.REQUEST_OK);
     }
 
     // 그룹 가입 요청 삭제
     @DeleteMapping(value = "/{groupId}/remove")
-    public ResponseEntity<BaseResponse<?>> deleteJoin(@PathVariable Long groupId, HttpServletRequest request) {
+    public BaseResponse<?> deleteJoin(@PathVariable Long groupId, HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         userGroupService.deleteJoin(userId, groupId);
-        return ResponseEntity.ok(BaseResponse.success("그룹 가입 요청을 삭제했습니다."));
+        return new BaseResponse<>(ResponseCode.REQUEST_OK);
     }
 
     // 그룹 내 인원 조회
     @GetMapping(value = "/{groupId}/users")
-    public ResponseEntity<BaseResponse<List<UserInfoDto>>> getUserInfoInGroup(@PathVariable Long groupId, HttpServletRequest request) {
+    public BaseResponse<UserInfoDto> getUserInfoInGroup(@PathVariable Long groupId, HttpServletRequest request) {
         SessionUtils.getUserIdBySession(request);
         List<UserInfoDto> userInfos = userGroupService.getUserInfoInGroup(groupId);
-        return ResponseEntity.ok(BaseResponse.success("그룹 인원들을 조회했습니다.", userInfos));
+        return new BaseResponse<>(userInfos);
     }
 
     // 그룹 나가기
     @DeleteMapping(value = "/{groupId}/leave")
-    public ResponseEntity<BaseResponse<?>> leaveGroup(@PathVariable Long groupId, HttpServletRequest request) {
+    public BaseResponse<?> leaveGroup(@PathVariable Long groupId, HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         userGroupService.deleteJoin(userId, groupId);
-        return ResponseEntity.ok(BaseResponse.success("그룹을 나갔습니다."));
+        return new BaseResponse<>(ResponseCode.REQUEST_OK);
     }
 
 

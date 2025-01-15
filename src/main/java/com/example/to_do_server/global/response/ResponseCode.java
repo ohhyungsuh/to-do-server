@@ -6,7 +6,10 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum ErrorCode {
+public enum ResponseCode {
+    // 성공
+    REQUEST_OK(HttpStatus.OK, "올바른 요청입니다."),
+
     // 인증, 인가
     USER_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "해당 작업을 수행할 권한이 없습니다."),
     USER_NOT_AUTHENTICATED(HttpStatus.UNAUTHORIZED, "로그인하지 않은 사용자입니다."),
