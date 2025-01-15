@@ -78,8 +78,8 @@ public class GroupController {
     // 전체 그룹 조회
     @GetMapping
     public BaseResponse<GroupInfoDto> getGroupInfos(HttpServletRequest request) {
-        SessionUtils.getUserIdBySession(request);
-        List<GroupInfoDto> groupInfos = groupService.getGroupInfos();
+        Long userId = SessionUtils.getUserIdBySession(request);
+        List<GroupInfoDto> groupInfos = groupService.getGroupInfos(userId);
         return new BaseResponse<>(groupInfos);
     }
 }

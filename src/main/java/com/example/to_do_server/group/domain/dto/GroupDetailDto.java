@@ -17,5 +17,4 @@ public class GroupDetailDto {
 
     @JsonProperty("user")
     private final GroupOwnerDto groupOwnerDto;
-    private final Status status;
 }

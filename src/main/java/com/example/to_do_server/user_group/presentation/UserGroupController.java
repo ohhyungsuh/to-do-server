@@ -3,12 +3,12 @@ package com.example.to_do_server.user_group.presentation;
 import com.example.to_do_server.global.response.BaseResponse;
 import com.example.to_do_server.global.response.ResponseCode;
 import com.example.to_do_server.session.SessionUtils;
+import com.example.to_do_server.user_group.domain.dto.UserGroupDto;
 import com.example.to_do_server.user_group.domain.dto.UserInfoDto;
 import com.example.to_do_server.user_group.service.UserGroupService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +23,13 @@ public class UserGroupController {
 
     // todo 알림 테이블 만들어서 실시간 알람 기능 만들어보기
     // 그룹 가입 요청
-    @PostMapping(value = "/{groupId}")
+    @PostMapping(value = "/{groupId}/request")
     public BaseResponse<?> sendJoin(@PathVariable Long groupId, HttpServletRequest request) {
         Long userId = SessionUtils.getUserIdBySession(request);
         userGroupService.sendJoin(userId, groupId);
         return new BaseResponse<>(ResponseCode.REQUEST_OK);
     }
+
 
     // 그룹 가입 요청 삭제
     @DeleteMapping(value = "/{groupId}/remove")
@@ -54,18 +55,40 @@ public class UserGroupController {
         return new BaseResponse<>(ResponseCode.REQUEST_OK);
     }
 
+    // 가입 요청 들어온 사용자 조회
+    @GetMapping(value = "/{groupId}/request")
+    public BaseResponse<UserGroupDto> getRequestUsers(@PathVariable Long groupId, HttpServletRequest request) {
+        Long userId = SessionUtils.getUserIdBySession(request);
+        List<UserGroupDto> inquireUsers = userGroupService.getRequestUsers(userId, groupId);
+        return new BaseResponse<>(inquireUsers);
+    }
 
+    // 그룹 가입 요청 수락
+    @PutMapping(value = "/{groupId}/{userId}/accept")
+    public BaseResponse<?> acceptRequestUser(@PathVariable Long groupId, @PathVariable Long userId, HttpServletRequest request) {
+        Long adminUserId = SessionUtils.getUserIdBySession(request);
+        userGroupService.acceptRequestUser(adminUserId, userId, groupId);
+        return new BaseResponse<>(ResponseCode.REQUEST_OK);
+    }
 
-    // todo 그룹 가입 요청 수락
+    // 그룹 가입 요청 거절
+    @PutMapping(value = "/{groupId}/{userId}/deny")
+    public BaseResponse<?> denyRequestUser(@PathVariable Long groupId, @PathVariable Long userId, HttpServletRequest request) {
+        Long adminUserId = SessionUtils.getUserIdBySession(request);
+        userGroupService.denyRequestUser(adminUserId, userId, groupId);
+        return new BaseResponse<>(ResponseCode.REQUEST_OK);
+    }
 
-    // todo 그룹 가입 요청 거절
+    // 그룹 내 인원 추방
+    @PutMapping(value = "/{groupId}/{userId}/expel")
+    public BaseResponse<?> expelUser(@PathVariable Long groupId, @PathVariable Long userId, HttpServletRequest request) {
+        Long adminUserId = SessionUtils.getUserIdBySession(request);
+        userGroupService.expelUser(adminUserId, userId, groupId);
+        return new BaseResponse<>(ResponseCode.REQUEST_OK);
+    }
 
-    // todo 그룹 가입 요청 조회
-
-    // todo 그룹 내 인원 추방
-
-    // todo 그룹 내 인원 매니저 승진
-
-    // todo 그룹 내 인원 일반 강등
-
+    /*
+     * todo 그룹 내 인원 매니저 승진
+     * todo 그룹 내 인원 일반 강등
+     */
 }
