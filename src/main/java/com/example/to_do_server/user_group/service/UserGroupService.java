@@ -32,6 +32,9 @@ public class UserGroupService {
         Optional<UserGroup> findUserGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId);
 
         if (findUserGroup.isPresent()) {
+            if (findUserGroup.get().getStatus().equals(Status.DENY)) {
+                throw GlobalException.from(ErrorCode.DENY_GROUP);
+            }
             throw GlobalException.from(ErrorCode.EXIST_USER_GROUP);
         }
 
