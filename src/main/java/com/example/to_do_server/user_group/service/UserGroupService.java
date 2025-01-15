@@ -6,8 +6,10 @@ import com.example.to_do_server.group.domain.Group;
 import com.example.to_do_server.group.domain.repository.GroupRepository;
 import com.example.to_do_server.user.domain.User;
 import com.example.to_do_server.user.domain.repository.UserRepository;
+import com.example.to_do_server.user_group.domain.Role;
 import com.example.to_do_server.user_group.domain.Status;
 import com.example.to_do_server.user_group.domain.UserGroup;
+import com.example.to_do_server.user_group.domain.dto.UserGroupDto;
 import com.example.to_do_server.user_group.domain.dto.UserInfoDto;
 import com.example.to_do_server.user_group.domain.repository.UserGroupRepository;
 import jakarta.transaction.Transactional;
@@ -60,9 +62,7 @@ public class UserGroupService {
 
     // 그룹 내 인원 조회
     public List<UserInfoDto> getUserInfoInGroup(Long groupId) {
-        List<UserGroup> userGroups = userGroupRepository.findByGroupId(groupId);
-
-        return userGroups.stream()
+        return userGroupRepository.findByGroupId(groupId).stream()
                 .filter(userGroup -> userGroup.getStatus().equals(Status.JOIN))
                 .map(userGroup -> new UserInfoDto(userGroup.getUser()))
                 .collect(Collectors.toList());
@@ -76,18 +76,52 @@ public class UserGroupService {
         userGroupRepository.deleteById(userGroup.getId());
     }
 
+    // 그룹 가입 요청 조회
+    public List<UserGroupDto> getRequestUsers(Long userId, Long groupId) {
+        isGroupAuthorized(userId, groupId);
 
-    // todo 그룹 가입 요청 수락
+        return userGroupRepository.findByGroupId(groupId).stream()
+                .filter(userGroup -> userGroup.getStatus().equals(Status.PENDING))
+                .map(userGroup -> new UserGroupDto(userGroup.getUser()))
+                .toList();
+    }
 
-    // todo 그룹 가입 요청 거절
+    // 그룹 가입 요청 수락
+    @Transactional
+    public void acceptRequestUser(Long adminUserId, Long userId, Long groupId) {
+        isGroupAuthorized(adminUserId, groupId);
 
-    // todo 그룹 가입 요청 조회
+        getUserGroupByUserIdAndGroupId(userId, groupId).acceptUser();
+    }
 
-    // todo 그룹 내 인원 추방
+    // 그룹 가입 요청 거절
+    @Transactional
+    public void denyRequestUser(Long adminUserId, Long userId, Long groupId) {
+        isGroupAuthorized(adminUserId, groupId);
 
+        UserGroup userGroup = getUserGroupByUserIdAndGroupId(userId, groupId);
+
+        userGroupRepository.delete(userGroup);
+    }
+
+    // 그룹 내 인원 추방
+    public void expelUser(Long adminUserId, Long userId, Long groupId) {
+        isGroupAuthorized(adminUserId, groupId);
+
+        UserGroup userGroup = getUserGroupByUserIdAndGroupId(userId, groupId);
+
+        userGroup.expelUser();
+    }
 
     private UserGroup getUserGroupByUserIdAndGroupId(Long userId, Long groupId) {
         return userGroupRepository.findByUserIdAndGroupId(userId, groupId)
                 .orElseThrow(() -> GlobalException.from(ResponseCode.INVALID_REQUEST));
     }
+
+    private void isGroupAuthorized(Long userId, Long groupId) {
+        if(getUserGroupByUserIdAndGroupId(userId, groupId).getRole().equals(Role.MANAGER)) {
+            throw GlobalException.from(ResponseCode.USER_NOT_AUTHORIZED);
+        }
+    }
+
 }

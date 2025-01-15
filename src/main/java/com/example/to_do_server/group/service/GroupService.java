@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -32,12 +33,7 @@ public class GroupService {
     // 그룹 생성
     @Transactional
     public GroupDto generate(GenerateGroupDto generateGroupDto, Long userId) {
-        Group group = Group.builder()
-                .name(generateGroupDto.getName())
-                .description(generateGroupDto.getDescription())
-                .build();
-
-        groupRepository.save(group);
+        Group group = groupRepository.save(Group.createGroup(generateGroupDto));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> GlobalException.from(ResponseCode.INVALID_SESSION));
@@ -61,10 +57,7 @@ public class GroupService {
         List<UserGroup> userGroups = userGroupRepository.findByUserId(userId);
 
         return userGroups.stream()
-                .filter(userGroup -> userGroup.getStatus().equals(Status.JOIN))
-                .map(userGroup -> groupRepository.findById(userGroup.getGroup().getId()).orElse(null))
-                .filter(Objects::nonNull)
-                .map(GroupInfoDto::new)
+                .map(userGroup -> new GroupInfoDto(userGroup.getGroup(), userGroup.getStatus()))
                 .toList();
     }
 
@@ -74,16 +67,19 @@ public class GroupService {
 
         return userGroups.stream()
                 .filter(userGroup -> userGroup.getStatus().equals(status))
-                .map(userGroup -> groupRepository.findById(userGroup.getGroup().getId()).orElse(null))
-                .filter(Objects::nonNull)
-                .map(GroupInfoDto::new)
+                .map(userGroup -> new GroupInfoDto(userGroup.getGroup(), userGroup.getStatus()))
                 .toList();
     }
 
     // 그룹 목록 전체 조회
-    public List<GroupInfoDto> getGroupInfos() {
+    public List<GroupInfoDto> getGroupInfos(Long userId) {
         return groupRepository.findAll().stream()
-                .map(GroupInfoDto::new)
+                .map(group -> {
+                    Status status = userGroupRepository.findByUserIdAndGroupId(userId, group.getId())
+                            .map(UserGroup::getStatus)
+                            .orElse(Status.NOT_JOIN);
+                    return new GroupInfoDto(group, status);
+                })
                 .toList();
     }
 
@@ -91,19 +87,17 @@ public class GroupService {
     public GroupDetailDto getGroupDetail(Long userId, Long groupId) {
         // groupId를 가진 데이터 담기
         log.info("findByGroupId 쿼리 실행");
-        List<UserGroup> userGroups = userGroupRepository.findByGroupId(groupId);
-
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> GlobalException.from(ResponseCode.NOT_EXIST_GROUP));
 
-        GroupInfoDto infoDto = new GroupInfoDto(group);
+        List<UserGroup> userGroups = userGroupRepository.findByGroupId(groupId);
+
+        GroupInfoDto groupInfoDto = new GroupInfoDto(group, getStatus(userGroups, userId));
         GroupOwnerDto ownerDto = getGroupOwner(userGroups);
-        Status status = getStatus(userGroups, userId);
 
         return GroupDetailDto.builder()
-                .groupInfoDto(infoDto)
+                .groupInfoDto(groupInfoDto)
                 .groupOwnerDto(ownerDto)
-                .status(status)
                 .build();
     }
 
@@ -121,7 +115,7 @@ public class GroupService {
     }
 
     private GroupOwnerDto getGroupOwner(List<UserGroup> userGroups) {
-        // OWNER가 없다는 뜻은 그룹이 삭제됐다는 뜻이다.
+        // OWNER가 없다는 뜻은 그룹이 삭제됐다는 뜻
         User user = userGroups.stream()
                 .filter(userGroup -> userGroup.getRole().equals(Role.OWNER))
                 .map(UserGroup::getUser)
